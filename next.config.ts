@@ -1,7 +1,8 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    domains: ['ik.imagekit.io'], // 👈 ImageKit domain (edit if yours is different)
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

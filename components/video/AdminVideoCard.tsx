@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Trash, PlayCircle } from "lucide-react";
 import { toast } from "sonner";
 import clsx from "clsx";
+import Image from "next/image";
 
 type Props = {
   video: {
@@ -57,13 +58,14 @@ export function AdminVideoCard({ video, onDelete }: Props) {
     >
       {/* Video preview area */}
       <div className="relative w-full aspect-[9/16] overflow-hidden rounded-lg bg-black shadow-sm transition hover:scale-[1.01] hover:shadow-md">
-        <img loading="lazy"
+        <Image
           src={video.thumbnail}
           alt="Thumbnail"
           className={clsx(
             "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
             hovered ? "opacity-0" : "opacity-100"
           )}
+          fill
         />
         <video
           ref={videoRef}
@@ -82,7 +84,10 @@ export function AdminVideoCard({ video, onDelete }: Props) {
             hovered ? "opacity-0" : "opacity-100"
           )}
         >
-          <PlayCircle className="text-white/90 bg-black/40 rounded-full p-1" size={48} />
+          <PlayCircle
+            className="text-white/90 bg-black/40 rounded-full p-1"
+            size={48}
+          />
         </div>
 
         {/* New Delete button */}
@@ -107,7 +112,8 @@ export function AdminVideoCard({ video, onDelete }: Props) {
           <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm mx-4 animate-in fade-in zoom-in">
             <h3 className="text-lg font-semibold mb-2">Delete Video</h3>
             <p className="text-sm text-gray-600 mb-4">
-              Are you sure you want to delete this video? This action cannot be undone.
+              Are you sure you want to delete this video? This action cannot be
+              undone.
             </p>
             <div className="flex justify-end gap-2">
               <Button

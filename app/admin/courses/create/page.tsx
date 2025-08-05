@@ -3,13 +3,26 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { Label } from "@radix-ui/react-label";
-import { Input } from "../../../../components/ui/input";
-import { Textarea } from "../../../../components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import Editor from "@/components/editor";
 import { ImageIcon } from "lucide-react";
-import { Button } from "../../../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import { uploadToImageKit } from "@/lib/upload-to-imagekit";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+
+// ✅ Define the expected shape of course data
+type CoursePayload = {
+  title: string;
+  totalFee: string;
+  duration: string;
+  approvedBy: string;
+  shortDescription: string;
+  fullDescription: string;
+  status: string;
+  image: string;
+};
 
 export default function CreateCourse() {
   const router = useRouter();
@@ -41,29 +54,25 @@ export default function CreateCourse() {
     }
   };
 
-async function createCourse(courseData: any) {
-  const response = await fetch("/api/courses/create", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(courseData),
-  });
+  async function createCourse(courseData: CoursePayload) {
+    const response = await fetch("/api/courses/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(courseData),
+    });
 
-  // Read once:
-  const data = await response.json();
+    const data = await response.json();
 
-  if (!response.ok) {
-    // Use error message from API or fallback:
-    throw new Error(data.error || "Failed to create course");
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to create course");
+    }
+
+    return data;
   }
 
-  return data;
-}
-
-
-
-    const handleSubmit = async () => {
+  const handleSubmit = async () => {
     if (!title.trim() || !imageUrl) {
       toast.error("Title and cover image are required.");
       return;
@@ -71,7 +80,7 @@ async function createCourse(courseData: any) {
 
     setSubmitting(true);
 
-    const payload = {
+    const payload: CoursePayload = {
       title: title.trim(),
       totalFee: fee.trim(),
       duration: duration.trim(),
@@ -85,7 +94,6 @@ async function createCourse(courseData: any) {
     try {
       await createCourse(payload);
       toast.success("Course created!");
-      // Reset form
       setTitle("");
       setFee("");
       setDuration("");
@@ -95,7 +103,6 @@ async function createCourse(courseData: any) {
       setStatus("Ongoing");
       setImageUrl(null);
 
-      // Redirect user to courses page
       router.push("/admin/courses");
     } catch (error) {
       console.error("Course API error:", error);
@@ -208,11 +215,15 @@ async function createCourse(courseData: any) {
             </label>
           </div>
           {imageUrl && (
-            <img
-              src={imageUrl}
-              alt="Course Cover"
-              className="mt-2 rounded-md w-full object-cover h-48"
-            />
+            <div className="mt-2 relative w-full h-48 rounded-md overflow-hidden">
+              <Image
+                src={imageUrl}
+                alt="Course Cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
+            </div>
           )}
         </div>
 

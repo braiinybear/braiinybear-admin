@@ -10,6 +10,7 @@ import Editor from "@/components/editor"; // your markdown/RTE editor
 import { ImageIcon } from "lucide-react"; // or any icon you want
 import { useRouter } from "next/navigation";
 import { uploadToImageKit } from "@/lib/upload-to-imagekit"; // your image upload util
+import Image from "next/image";
 
 export type Blog = {
   id: string;
@@ -29,7 +30,9 @@ export default function BlogEditor({ initialData }: Props) {
   const [title, setTitle] = useState(initialData?.title || "");
   const [excerpt, setExcerpt] = useState(initialData?.excerpt || "");
   const [content, setContent] = useState(initialData?.content || "");
-  const [imageUrl, setImageUrl] = useState<string | null>(initialData?.image || null);
+  const [imageUrl, setImageUrl] = useState<string | null>(
+    initialData?.image || null
+  );
   const [imageUploading, setImageUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -151,9 +154,10 @@ export default function BlogEditor({ initialData }: Props) {
             </label>
           </div>
           {imageUrl && (
-            <img
+            <Image
               src={imageUrl}
-              alt="Blog Cover"
+              alt={"Blog Cover"}
+              fill
               className="mt-2 rounded-md w-full object-cover h-48"
             />
           )}

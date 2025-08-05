@@ -9,6 +9,7 @@ import Editor from "../editor";
 import { ImageIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { uploadToImageKit } from "@/lib/upload-to-imagekit";
+import Image from "next/image";
 
 export type Course = {
   id: string;
@@ -31,11 +32,17 @@ export default function CourseEditor({ initialData }: Props) {
   const [fee, setFee] = useState(initialData?.totalFee || "");
   const [duration, setDuration] = useState(initialData?.duration || "");
   const [approvedBy, setApprovedBy] = useState(initialData?.approvedBy || "");
-  const [shortDescription, setShortDescription] = useState(initialData?.shortDescription || "");
-  const [fullDescription, setFullDescription] = useState(initialData?.fullDescription || "");
+  const [shortDescription, setShortDescription] = useState(
+    initialData?.shortDescription || ""
+  );
+  const [fullDescription, setFullDescription] = useState(
+    initialData?.fullDescription || ""
+  );
   const [status, setStatus] = useState(initialData?.status || "Ongoing");
 
-  const [imageUrl, setImageUrl] = useState<string | null>(initialData?.image || null);
+  const [imageUrl, setImageUrl] = useState<string | null>(
+    initialData?.image || null
+  );
   const [imageUploading, setImageUploading] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +73,7 @@ export default function CourseEditor({ initialData }: Props) {
       duration: duration.trim(),
       approvedBy: approvedBy.trim(),
       shortDescription: shortDescription.trim(),
-      fullDescription,    // markdown string
+      fullDescription, // markdown string
       status,
       image: imageUrl!,
     };
@@ -187,10 +194,11 @@ export default function CourseEditor({ initialData }: Props) {
             </label>
           </div>
           {imageUrl && (
-            <img
+            <Image
               src={imageUrl}
               alt="Course Cover"
               className="mt-2 rounded-md w-full object-cover h-48"
+              fill
             />
           )}
         </div>

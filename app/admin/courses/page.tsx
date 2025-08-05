@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { Trash2, Pencil, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 type Course = {
   id: string;
@@ -26,7 +27,9 @@ export default function AdminCourseList() {
   const fetchCourses = async (query = "") => {
     setFetching(true);
     try {
-      const res = await fetch(`/api/courses?search=${encodeURIComponent(query)}`);
+      const res = await fetch(
+        `/api/courses?search=${encodeURIComponent(query)}`
+      );
       if (!res.ok) throw new Error("Failed to fetch courses");
       const data = await res.json();
       setCourses(data.courses || []);
@@ -125,13 +128,17 @@ export default function AdminCourseList() {
               key={course.id}
               className="border rounded-xl shadow-sm overflow-hidden bg-white"
             >
-              <img
+              <Image
                 src={course.image}
                 alt={course.title}
-                className="h-40 w-full object-cover"
+                fill
+                className="object-cover h-40 w-full"
+                sizes="(max-width: 768px) 100vw, 33vw"
               />
               <div className="p-4 space-y-2">
-                <h2 className="font-semibold text-lg truncate">{course.title}</h2>
+                <h2 className="font-semibold text-lg truncate">
+                  {course.title}
+                </h2>
                 <p className="text-xs text-gray-500">{course.status}</p>
 
                 <div className="flex justify-between gap-2 pt-2">
