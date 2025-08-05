@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model VideoItem {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  url        String
+  thumbnail  String
+  title      String?
+  createdAt  DateTime @default(now())
+}
+
+model Course {
+  id              String   @id @default(uuid()) @map("_id") 
+  title           String
+  status          String
+  image           String
+  totalFee        String
+  duration        String
+  approvedBy      String
+  shortDescription String
+  fullDescription  String
+  createdAt       DateTime @default(now())
+}
+
+
+model Blog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug      String   @unique
+  title     String
+  image    String
+  excerpt   String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
