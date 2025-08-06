@@ -10,7 +10,7 @@ const EditBlogPage = async ({
   const { id } = await params;
 
   const headersList = await headers();
-  const host = headersList.get("host") || "localhost:3000";
+  const host = headersList.get("host") || "https://braiinybear-admin.vercel.app/";
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
 
   const res = await fetch(`${protocol}://${host}/api/blogs/${id}`, { cache: "no-store" });

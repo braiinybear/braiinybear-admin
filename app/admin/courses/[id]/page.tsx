@@ -8,7 +8,7 @@ type Props = {
 export default async function EditCoursePage({ params }: Props) {
   const { id } = await params;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://braiinybear-admin.vercel.app/";
   const res = await fetch(`${baseUrl}/api/courses/${id}`, {
     cache: "no-store",
   });
