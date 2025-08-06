@@ -1,16 +1,21 @@
 import { db } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+
 
 export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: { id: string } } // ✅ fixed typing
 ) {
+  const { id } = context.params;
+
   try {
     const blog = await db.blog.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
-    if (!blog) return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    if (!blog) {
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    }
 
     return NextResponse.json(blog);
   } catch (err) {
@@ -19,15 +24,17 @@ export async function GET(
 }
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: { id: string } }
 ) {
+  const { id } = context.params;
+
   try {
     const body = await req.json();
     const { title, excerpt, content } = body;
 
     const blog = await db.blog.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title,
         excerpt,
@@ -43,12 +50,14 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: { id: string } }
 ) {
+  const { id } = context.params;
+
   try {
     await db.blog.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Deleted" });
