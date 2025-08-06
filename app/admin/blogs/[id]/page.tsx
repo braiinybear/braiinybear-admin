@@ -2,16 +2,14 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import BlogEditor, { Blog } from "@/components/blog/BlogEditor";
 
-type PageProps = {
-  params: {
-    id: string;
-  };
-};
-
-export default async function EditBlogPage({ params }: PageProps) {
+export default async function EditBlogPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const { id } = params;
 
-  const headersList = await headers(); // <-- ADD await here
+  const headersList = await headers();
   const host = headersList.get("host");
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
 
