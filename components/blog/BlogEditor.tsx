@@ -154,12 +154,16 @@ export default function BlogEditor({ initialData }: Props) {
             </label>
           </div>
           {imageUrl && (
-            <Image
-              src={imageUrl}
-              alt={"Blog Cover"}
-              fill
-              className="mt-2 rounded-md w-full object-cover h-48"
-            />
+            <div  className="relative mt-2 rounded-md w-full h-48">
+
+               <Image
+                src={imageUrl}
+                alt="Blog image"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className="object-cover"
+              />
+              </div>
           )}
         </div>
 

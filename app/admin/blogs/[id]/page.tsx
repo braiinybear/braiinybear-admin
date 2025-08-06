@@ -1,19 +1,16 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import BlogEditor, { Blog } from "@/components/blog/BlogEditor";
-import { FC } from "react";
 
-type EditBlogPageProps = {
-  params: {
-    id: string;
-  };
-};
+const EditBlogPage = async ({
+  params,
+}: {
+  params: Promise<{ id: string }>; // 👈 params is now a Promise in Next.js 15
+}) => {
+  const { id } = await params; // 👈 Must await params
 
-const EditBlogPage: FC<EditBlogPageProps> = async ({ params }) => {
-  const { id } = params;
-
-  const headersList = await headers();
-  const host = headersList.get("host");
+  const headersList = await headers(); // 👈 Must await headers() too
+  const host = headersList.get("host") || "localhost:3000";
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
 
   try {
