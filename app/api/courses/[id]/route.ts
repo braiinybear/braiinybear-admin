@@ -2,20 +2,18 @@ import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params;
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
 
   try {
     const course = await db.course.findUnique({ where: { id } });
-
-    if (!course) {
-      return NextResponse.json({ error: "Course not found" }, { status: 404 });
-    }
-
+    if (!course) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(course);
-  } catch (error) {
-    console.error("[COURSE_GET_ERROR]", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
 }
 
