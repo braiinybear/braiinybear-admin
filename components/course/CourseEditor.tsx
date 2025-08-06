@@ -200,6 +200,7 @@ export default function CourseEditor({ initialData }: Props) {
                 src={imageUrl}
                 alt="Course Cover"
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
               />
             </div>
