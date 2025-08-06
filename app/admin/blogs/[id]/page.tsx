@@ -2,11 +2,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import BlogEditor, { Blog } from "@/components/blog/BlogEditor";
 
-export default async function EditBlogPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function EditBlogPage({ params }: any) {
   const { id } = params;
 
   const headersList = await headers();
@@ -33,3 +29,4 @@ export default async function EditBlogPage({
     return notFound();
   }
 }
+
