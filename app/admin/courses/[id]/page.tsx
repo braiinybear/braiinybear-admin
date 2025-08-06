@@ -1,22 +1,18 @@
-// app/admin/courses/[id]/page.tsx
 import { notFound } from "next/navigation";
 import CourseEditor, { Course } from "@/components/course/CourseEditor";
 
-type PageProps = {
-  params: Promise<{ id: string }>; // ✅ params is now a Promise in Next.js 15+
+type Props = {
+  params: Promise<{ id: string }>;
 };
 
-export default async function EditCoursePage({ params }: PageProps) {
-  const { id } = await params; // ✅ Must await to use id
+export default async function EditCoursePage({ params }: Props) {
+  const { id } = await params;
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-
   const res = await fetch(`${baseUrl}/api/courses/${id}`, {
     cache: "no-store",
   });
-
   if (!res.ok) return notFound();
-
   const course: Course = await res.json();
 
   return (

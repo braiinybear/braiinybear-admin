@@ -1,16 +1,16 @@
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-// GET handler with async Promise-based params
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params;
-
+  const { id } = await params;
   try {
     const blog = await db.blog.findUnique({ where: { id } });
-    if (!blog) return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    if (!blog) {
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    }
     return NextResponse.json(blog);
   } catch {
     return NextResponse.json({ error: "Failed to fetch blog" }, { status: 500 });
@@ -19,10 +19,9 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params;
-
+  const { id } = await params;
   try {
     const { title, excerpt, content } = await req.json();
     const updated = await db.blog.update({
@@ -38,10 +37,9 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params;
-
+  const { id } = await params;
   try {
     await db.blog.delete({ where: { id } });
     return NextResponse.json({ message: "Deleted" });
