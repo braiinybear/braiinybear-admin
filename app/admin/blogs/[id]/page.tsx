@@ -5,33 +5,25 @@ import BlogEditor, { Blog } from "@/components/blog/BlogEditor";
 const EditBlogPage = async ({
   params,
 }: {
-  params: Promise<{ id: string }>; // 👈 params is now a Promise in Next.js 15
+  params: Promise<{ id: string }>;
 }) => {
-  const { id } = await params; // 👈 Must await params
+  const { id } = await params;
 
-  const headersList = await headers(); // 👈 Must await headers() too
+  const headersList = await headers();
   const host = headersList.get("host") || "localhost:3000";
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
 
-  try {
-    const res = await fetch(`${protocol}://${host}/api/blogs/${id}`, {
-      cache: "no-store",
-    });
+  const res = await fetch(`${protocol}://${host}/api/blogs/${id}`, { cache: "no-store" });
+  if (!res.ok) return notFound();
 
-    if (!res.ok) return notFound();
+  const blog: Blog = await res.json();
 
-    const blog: Blog = await res.json();
-
-    return (
-      <div className="p-6 max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Edit Blog</h1>
-        <BlogEditor initialData={blog} />
-      </div>
-    );
-  } catch (error) {
-    console.error("Failed to load blog:", error);
-    return notFound();
-  }
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Edit Blog</h1>
+      <BlogEditor initialData={blog} />
+    </div>
+  );
 };
 
 export default EditBlogPage;
