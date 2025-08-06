@@ -36,12 +36,15 @@ export async function PATCH(req: NextRequest, context: { params: { id: string } 
 }
 
 // DELETE
-export async function DELETE(req: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params;
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
 
   try {
     await db.course.delete({ where: { id } });
-    return NextResponse.json({ message: "Course deleted successfully" });
+    return NextResponse.json({ message: "Deleted successfully" });
   } catch (error) {
     console.error("[COURSE_DELETE_ERROR]", error);
     return NextResponse.json({ error: "Failed to delete course" }, { status: 500 });
