@@ -18,17 +18,19 @@ export async function GET(
 }
 
 // PATCH
-export async function PATCH(req: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params;
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
   const body = await req.json();
 
   try {
-    const updatedCourse = await db.course.update({
+    const updated = await db.course.update({
       where: { id },
       data: body,
     });
-
-    return NextResponse.json(updatedCourse);
+    return NextResponse.json(updated);
   } catch (error) {
     console.error("[COURSE_UPDATE_ERROR]", error);
     return NextResponse.json({ error: "Failed to update course" }, { status: 500 });
