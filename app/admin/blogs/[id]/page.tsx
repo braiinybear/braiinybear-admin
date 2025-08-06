@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import BlogEditor, { Blog } from "@/components/blog/BlogEditor";
+import { FC } from "react";
 
 type EditBlogPageProps = {
   params: {
@@ -8,10 +9,10 @@ type EditBlogPageProps = {
   };
 };
 
-export default async function EditBlogPage({ params }: EditBlogPageProps) {
+const EditBlogPage: FC<EditBlogPageProps> = async ({ params }) => {
   const { id } = params;
 
-  const headersList = headers(); // headers() returns Headers object directly, no need to await
+  const headersList = await headers();
   const host = headersList.get("host");
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
 
@@ -34,4 +35,6 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
     console.error("Failed to load blog:", error);
     return notFound();
   }
-}
+};
+
+export default EditBlogPage;

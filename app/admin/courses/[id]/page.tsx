@@ -5,12 +5,15 @@ import CourseEditor, { Course } from "@/components/course/CourseEditor";
 export default async function EditCoursePage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id } = await params;
-  const res = await fetch(`http://localhost:3000/api/courses/${id}`, {
-    cache: "no-store",
-  });
+  const { id } = params;
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/courses/${id}`,
+    {
+      cache: "no-store",
+    }
+  );
   if (!res.ok) return notFound();
   const course: Course = await res.json();
 
