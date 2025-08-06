@@ -31,12 +31,12 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             text="Dashboard"
             className="hover:text-blue-400"
           />
-          <SidebarLink
+          {/* <SidebarLink
             href="/admin/blogs"
             icon={<BookText size={18} />}
             text="Blogs"
             className="hover:text-blue-400"
-          />
+          /> */}
           <SidebarLink
             href="/admin/videos"
             icon={<Video size={18} />}

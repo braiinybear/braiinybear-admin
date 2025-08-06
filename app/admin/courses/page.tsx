@@ -27,9 +27,7 @@ export default function AdminCourseList() {
   const fetchCourses = async (query = "") => {
     setFetching(true);
     try {
-      const res = await fetch(
-        `/api/courses?search=${encodeURIComponent(query)}`
-      );
+      const res = await fetch(`/api/courses?search=${encodeURIComponent(query)}`);
       if (!res.ok) throw new Error("Failed to fetch courses");
       const data = await res.json();
       setCourses(data.courses || []);
@@ -42,12 +40,10 @@ export default function AdminCourseList() {
   };
 
   useEffect(() => {
-    // Initial fetch on mount
-    fetchCourses();
+    fetchCourses(); // Initial fetch
   }, []);
 
   useEffect(() => {
-    // Debounce search input changes
     const handler = setTimeout(() => {
       fetchCourses(search.trim());
     }, 500);
@@ -91,7 +87,7 @@ export default function AdminCourseList() {
 
         <Link href="/admin/courses/create">
           <Button className="whitespace-nowrap flex items-center gap-2">
-            <Plus />
+            <Plus className="w-4 h-4" />
             Create New Course
           </Button>
         </Link>
@@ -126,20 +122,25 @@ export default function AdminCourseList() {
           {courses.map((course) => (
             <div
               key={course.id}
-              className="border rounded-xl shadow-sm overflow-hidden bg-white"
+              className="border rounded-xl shadow-sm overflow-hidden bg-white flex flex-col"
             >
-              <Image
-                src={course.image}
-                alt={course.title}
-                fill
-                className="object-cover h-40 w-full"
-                sizes="(max-width: 768px) 100vw, 33vw"
-              />
-              <div className="p-4 space-y-2">
-                <h2 className="font-semibold text-lg truncate">
-                  {course.title}
-                </h2>
-                <p className="text-xs text-gray-500">{course.status}</p>
+              <div className="relative w-full h-40">
+                <Image
+                  src={course.image}
+                  alt={course.title}
+                  fill
+                  className="object-cover rounded-t-xl"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              </div>
+
+              <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
+                <div>
+                  <h2 className="font-semibold text-lg truncate">
+                    {course.title}
+                  </h2>
+                  <p className="text-xs text-gray-500">{course.status}</p>
+                </div>
 
                 <div className="flex justify-between gap-2 pt-2">
                   <Button

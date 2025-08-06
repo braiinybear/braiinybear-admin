@@ -73,7 +73,7 @@ export default function CourseEditor({ initialData }: Props) {
       duration: duration.trim(),
       approvedBy: approvedBy.trim(),
       shortDescription: shortDescription.trim(),
-      fullDescription, // markdown string
+      fullDescription,
       status,
       image: imageUrl!,
     };
@@ -193,13 +193,16 @@ export default function CourseEditor({ initialData }: Props) {
               </span>
             </label>
           </div>
+
           {imageUrl && (
-            <Image
-              src={imageUrl}
-              alt="Course Cover"
-              className="mt-2 rounded-md w-full object-cover h-48"
-              fill
-            />
+            <div className="relative w-full h-48 mt-2 rounded-md overflow-hidden">
+              <Image
+                src={imageUrl}
+                alt="Course Cover"
+                fill
+                className="object-cover"
+              />
+            </div>
           )}
         </div>
 
