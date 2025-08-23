@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { imagekit } from "@/lib/imagekit";
+import { withCors } from "@/lib/cors";
 
 export async function POST(req: NextRequest) {
   const form = await req.formData();
@@ -48,5 +49,5 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
   });
 
-  return NextResponse.json(videos);
+  return withCors(NextResponse.json(videos));
 }

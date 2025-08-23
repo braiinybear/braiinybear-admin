@@ -1,3 +1,4 @@
+import { withCors } from "@/lib/cors";
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -10,10 +11,10 @@ export async function GET(
 
   try {
     const course = await db.course.findUnique({ where: { id } });
-    if (!course) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    return NextResponse.json(course);
+    if (!course) return withCors(NextResponse.json({ error: "Not found" }, { status: 404 }));
+    return withCors(NextResponse.json(course));
   } catch {
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    return withCors(NextResponse.json({ error: "Internal error" }, { status: 500 }));
   }
 }
 

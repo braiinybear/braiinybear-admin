@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { Prisma } from "@prisma/client";
+import { withCors } from "@/lib/cors";
 
 export async function GET(req: NextRequest) {
   try {
@@ -27,9 +28,9 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ courses });
+    return withCors(NextResponse.json({ courses }));
   } catch (err) {
     console.error("Failed to fetch courses", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return withCors(NextResponse.json({ error: "Internal Server Error" }, { status: 500 }));
   }
 }

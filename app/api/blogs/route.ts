@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db"; // adjust path based on your structure
 import { Prisma } from "@prisma/client"; // <-- import Prisma
-
+import { withCors } from "@/lib/cors";
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const search = searchParams.get("search") || "";
@@ -22,7 +22,7 @@ export async function GET(req: Request) {
     },
   });
 
-  return NextResponse.json({ blogs });
+  return withCors(NextResponse.json({ blogs }));
 }
 
 export async function POST(req: Request) {
