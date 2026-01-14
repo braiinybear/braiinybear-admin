@@ -54,7 +54,7 @@ model UserInfo {
   fatherName       String
   motherName       String
   courseName       String
-  aadharCardNumber String
+  aadharCardNo String
   aadharBack       String
   aadharFront      String
   marksheets       String[]
