@@ -8,35 +8,55 @@ datasource db {
 }
 
 model VideoItem {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  url        String
-  thumbnail  String
-  title      String?
-  createdAt  DateTime @default(now())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  url       String
+  thumbnail String
+  title     String?
+  createdAt DateTime @default(now())
 }
 
 model Course {
-  id              String   @id @default(uuid()) @map("_id") 
-  title           String
-  status          String
-  image           String
-  totalFee        String
-  duration        String
-  approvedBy      String
+  id               String   @id @default(uuid()) @map("_id")
+  title            String
+  status           String
+  image            String
+  totalFee         String
+  duration         String
+  approvedBy       String
   shortDescription String
   fullDescription  String
-  createdAt       DateTime @default(now())
+  createdAt        DateTime @default(now())
 }
-
 
 model Blog {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   slug      String   @unique
   title     String
-  image    String
+  image     String
   excerpt   String
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+model UserInfo {
+  id               String        @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  email            String?
+  phoneNo          String
+  fatherName       String
+  motherName       String
+  courseName       String
+  aadharCardNumber String
+  aadharBack       String
+  aadharFront      String
+  marksheets       String[]
+  address          String
+  paymentStatus    PaymentStatus @default(PENDING)
+}
