@@ -21,7 +21,7 @@ export type UserInfoRequestBody = {
 
 // Handle OPTIONS preflight request for CORS
 export async function OPTIONS(req: Request) {
-  return withCors(new NextResponse(null, { status: 200 }));
+  return withCors(new NextResponse(null, { status: 200 }), req);
 }
 
 export async function POST(req: Request) {
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
       return withCors(NextResponse.json(
         { success: false, message: "Missing required fields" },
         { status: 400 }
-      ));
+      ), req);
     }
 
     const userInfo = await db.userInfo.create({
@@ -84,12 +84,12 @@ export async function POST(req: Request) {
       success: true,
       message: "Registration successful",
       data: userInfo,
-    }));
+    }), req);
   } catch (err) {
     console.error(err);
     return withCors(NextResponse.json(
       { success: false, message: "Registration failed" },
       { status: 500 }
-    ));
+    ), req);
   }
 }
