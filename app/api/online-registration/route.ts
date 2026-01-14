@@ -2,10 +2,11 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { PaymentStatus } from "@prisma/client";
 
-export type UserInfoRequestBody = {
+export type User = {
   email?: string;
   name: string;
   phoneNo: string;
+  userImg:string;
   fatherName: string;
   motherName: string;
   courseName: string;
@@ -19,10 +20,11 @@ export type UserInfoRequestBody = {
 
 export async function POST(req: Request) {
   try {
-    const body: UserInfoRequestBody = await req.json();
+    const body: User = await req.json();
     const {
       name,
       email,
+      userImg,
       phoneNo,
       fatherName,
       motherName,
@@ -55,6 +57,7 @@ export async function POST(req: Request) {
     const userInfo = await db.userInfo.create({
       data: {
         name,
+        userImg,
         email,
         phoneNo,
         fatherName,
