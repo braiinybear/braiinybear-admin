@@ -7,13 +7,13 @@ export type UserInfoRequestBody = {
   email?: string;
   name: string;
   phoneNo: string;
+  userImg: string;
   fatherName: string;
   motherName: string;
   courseName: string;
-  aadharCardNo: string; // Fixed to match frontend
+  aadharCardNo: string;
   aadharBack: string;
   aadharFront: string;
-  userImg?: string; // Added to accept userImg from frontend
   marksheets: string[];
   address: string;
   paymentStatus?: PaymentStatus;
@@ -30,25 +30,27 @@ export async function POST(req: Request) {
     const {
       name,
       email,
+      userImg,
       phoneNo,
       fatherName,
       motherName,
       courseName,
-      aadharCardNo, // Fixed to match frontend
+      aadharCardNo,
       aadharBack,
       aadharFront,
-      userImg, // Added
       marksheets,
       address,
       paymentStatus,
     } = body;
+
     if (
       !name ||
+      !userImg ||
       !phoneNo ||
       !fatherName ||
       !motherName ||
       !courseName ||
-      !aadharCardNo || // Fixed to match frontend
+      !aadharCardNo ||
       !aadharBack ||
       !aadharFront ||
       !marksheets?.length ||
@@ -63,15 +65,15 @@ export async function POST(req: Request) {
     const userInfo = await db.userInfo.create({
       data: {
         name,
+        userImg,
         email,
         phoneNo,
         fatherName,
         motherName,
         courseName,
-        aadharCardNumber: aadharCardNo, // Map to database field name
+        aadharCardNo,
         aadharBack,
         aadharFront,
-        userImg, // Store userImg if provided
         marksheets,
         address,
         paymentStatus: paymentStatus ?? PaymentStatus.PENDING,
