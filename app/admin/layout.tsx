@@ -9,6 +9,7 @@ import {
   Video,
   GraduationCap,
   LayoutDashboard,
+  User,
 } from "lucide-react";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
@@ -47,6 +48,12 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             href="/admin/courses"
             icon={<GraduationCap size={18} />}
             text="Courses"
+            className="hover:text-blue-400"
+          />
+          <SidebarLink
+            href="/admin/user"
+            icon={<User size={18} />}
+            text="Users"
             className="hover:text-blue-400"
           />
         </nav>

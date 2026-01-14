@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { 
   Book, 
   Video,
-   GraduationCap } from "lucide-react";
+   GraduationCap, 
+   User} from "lucide-react";
 
 export default function Home() {
   
@@ -13,7 +14,7 @@ export default function Home() {
       <h1 className="text-4xl font-bold mb-4">📊 Admin Dashboard</h1>
       <p className="text-gray-600 mb-12">Manage your content below</p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-xl w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 max-w-xl w-full">
         <Link href="/admin/blogs" className="group">
           <Button variant="outline" className="w-full h-32 flex flex-col items-center justify-center gap-2 group-hover:bg-blue-100">
             <Book className="w-6 h-6" />
@@ -32,6 +33,13 @@ export default function Home() {
           <Button variant="outline" className="w-full h-32 flex flex-col items-center justify-center gap-2 group-hover:bg-green-100">
             <GraduationCap className="w-6 h-6" />
             <span>Manage Courses</span>
+          </Button>
+        </Link>
+
+         <Link href="/admin/user" className="group">
+          <Button variant="outline" className="w-full h-32 flex flex-col items-center justify-center gap-2 group-hover:bg-green-100">
+            <User className="w-6 h-6" />
+            <span>Manage Users</span>
           </Button>
         </Link>
       </div>
