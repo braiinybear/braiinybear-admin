@@ -24,10 +24,16 @@ export async function GET(req: NextRequest) {
         title: true,
         image: true,
         status: true,
+        shortDescription: true,
+        totalFee: true,
+        fullDescription:true,
+        approvedBy: true
+        
       },
       orderBy: { createdAt: "desc" },
     });
 
+    console.log("courses :",courses)
     return withCors(NextResponse.json({ courses }));
   } catch (err) {
     console.error("Failed to fetch courses", err);

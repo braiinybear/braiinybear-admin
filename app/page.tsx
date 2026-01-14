@@ -7,6 +7,7 @@ import {
    GraduationCap } from "lucide-react";
 
 export default function Home() {
+  
   return (
     <main className="min-h-screen px-6 py-12 bg-gray-100 flex flex-col items-center justify-center text-center font-sans">
       <h1 className="text-4xl font-bold mb-4">📊 Admin Dashboard</h1>
