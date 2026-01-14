@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { withCors } from "@/lib/cors";
 import { PaymentStatus } from "@prisma/client";
 type User = {
+    id:string;
     name: string;
     userImg: string;
     courseName: string;
@@ -30,6 +31,7 @@ export async function GET(req: Request) {
     const [users, total] = await Promise.all([
       db.userInfo.findMany({
         select: {
+          id:true,
           userImg: true,
           name: true,
           courseName: true,
@@ -66,7 +68,7 @@ export async function GET(req: Request) {
     return withCors(
       NextResponse.json(
         { success: false, message: "Fetching users failed" },
-        { status: 500 }
+        {status:500}
       )
     );
   }
