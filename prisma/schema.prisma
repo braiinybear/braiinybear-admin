@@ -46,19 +46,19 @@ enum PaymentStatus {
 }
 
 model UserInfo {
-  id               String        @id @default(auto()) @map("_id") @db.ObjectId
-  name             String
-  email            String?
-  userImg          String
-  phoneNo          String
-  fatherName       String
-  motherName       String
-  courseName       String
-  aadharCardNo String
-  aadharBack       String
-  aadharFront      String
-  marksheets       String[]
-  address          String
-  paymentStatus    PaymentStatus @default(PENDING)
-  createdAt        DateTime      @default(now())
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  email         String?
+  userImg       String
+  phoneNo       String
+  fatherName    String
+  motherName    String
+  courseName    String
+  aadharCardNo  String
+  aadharBack    String
+  aadharFront   String
+  marksheets    String[]
+  address       String
+  paymentStatus PaymentStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
 }
