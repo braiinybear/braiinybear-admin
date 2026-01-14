@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { PaymentStatus } from "@prisma/client";
+import { withCors } from "@/lib/cors";
 
 export type UserInfoRequestBody = {
   email?: string;
@@ -9,13 +10,19 @@ export type UserInfoRequestBody = {
   fatherName: string;
   motherName: string;
   courseName: string;
-  aadharCardNumber: string;
+  aadharCardNo: string; // Fixed to match frontend
   aadharBack: string;
   aadharFront: string;
+  userImg?: string; // Added to accept userImg from frontend
   marksheets: string[];
   address: string;
   paymentStatus?: PaymentStatus;
 };
+
+// Handle OPTIONS preflight request for CORS
+export async function OPTIONS(req: Request) {
+  return withCors(new NextResponse(null, { status: 200 }));
+}
 
 export async function POST(req: Request) {
   try {
@@ -27,9 +34,10 @@ export async function POST(req: Request) {
       fatherName,
       motherName,
       courseName,
-      aadharCardNumber,
+      aadharCardNo, // Fixed to match frontend
       aadharBack,
       aadharFront,
+      userImg, // Added
       marksheets,
       address,
       paymentStatus,
@@ -40,16 +48,16 @@ export async function POST(req: Request) {
       !fatherName ||
       !motherName ||
       !courseName ||
-      !aadharCardNumber ||
+      !aadharCardNo || // Fixed to match frontend
       !aadharBack ||
       !aadharFront ||
       !marksheets?.length ||
       !address
     ) {
-      return NextResponse.json(
+      return withCors(NextResponse.json(
         { success: false, message: "Missing required fields" },
         { status: 400 }
-      );
+      ));
     }
 
     const userInfo = await db.userInfo.create({
@@ -60,25 +68,26 @@ export async function POST(req: Request) {
         fatherName,
         motherName,
         courseName,
-        aadharCardNumber,
+        aadharCardNumber: aadharCardNo, // Map to database field name
         aadharBack,
         aadharFront,
+        userImg, // Store userImg if provided
         marksheets,
         address,
         paymentStatus: paymentStatus ?? PaymentStatus.PENDING,
       },
     });
 
-    return NextResponse.json({
+    return withCors(NextResponse.json({
       success: true,
       message: "Registration successful",
       data: userInfo,
-    });
+    }));
   } catch (err) {
     console.error(err);
-    return NextResponse.json(
+    return withCors(NextResponse.json(
       { success: false, message: "Registration failed" },
       { status: 500 }
-    );
+    ));
   }
 }
