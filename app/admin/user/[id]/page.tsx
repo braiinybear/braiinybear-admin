@@ -38,7 +38,7 @@ export default function UserDetails() {
 
         if (!data.success) throw new Error(data.message);
         setUser(data.user);
-      } catch (err: any) {
+      } catch (err) {
         console.error(err);
         setError("Failed to fetch user details");
       } finally {
