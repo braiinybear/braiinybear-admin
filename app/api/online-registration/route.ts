@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { PaymentStatus } from "@prisma/client";
+import { PaymentStatus, Prisma } from "@prisma/client";
 import { withCors } from "@/lib/cors";
 
 export type UserInfoRequestBody = {
@@ -61,7 +61,6 @@ export async function POST(req: Request) {
         { status: 400 }
       ), req);
     }
-
     const userInfo = await db.userInfo.create({
       data: {
         name,
@@ -85,11 +84,25 @@ export async function POST(req: Request) {
       message: "Registration successful",
       data: userInfo,
     }), req);
-  } catch (err) {
-    console.error(err);
-    return withCors(NextResponse.json(
-      { success: false, message: "Registration failed" },
-      { status: 500 }
-    ), req);
+  } catch (error) {
+  console.error("Registration error:", error);
+
+  // Check for Prisma unique constraint error
+  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+    return withCors(
+      NextResponse.json(
+        { success: false, message: `Aadhaar number or phoneNo is already taken` },
+        { status: 400 }
+      ),
+      req
+    );
   }
+
+  // Generic error response for anything else
+  const errorMessage = error instanceof Error ? error.message : "Unknown server error";
+  return withCors(
+    NextResponse.json({ success: false, message: errorMessage }, { status: 500 }),
+    req
+  );
+}
 }

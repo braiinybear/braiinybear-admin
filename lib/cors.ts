@@ -1,12 +1,13 @@
 // lib/cors.ts
 import { NextResponse } from "next/server";
-
+const FRONTEND_URL = process.env.FRONTEND_URL!;
 export function withCors(response: NextResponse, request?: Request) {
   // Allowed origins
   const allowedOrigins = [
     // "http://localhost:5173",
     // "http://localhost:3000",
-    "https://www.braiinybear.org",
+    // "https://www.braiinybear.org",
+    FRONTEND_URL
 
   ];
 
