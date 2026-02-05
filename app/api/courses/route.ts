@@ -27,13 +27,13 @@ export async function GET(req: NextRequest) {
         shortDescription: true,
         totalFee: true,
         fullDescription:true,
-        approvedBy: true
+        approvedBy: true,
+        category: true,
         
       },
       orderBy: { createdAt: "desc" },
     });
 
-    console.log("courses :",courses)
     return withCors(NextResponse.json({ courses }));
   } catch (err) {
     console.error("Failed to fetch courses", err);

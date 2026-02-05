@@ -30,6 +30,7 @@ export default function CreateCourse() {
   const [fee, setFee] = useState("");
   const [duration, setDuration] = useState("");
   const [approvedBy, setApprovedBy] = useState("");
+  const [category, setCategory] = useState("");
   const [shortDescription, setShortDescription] = useState("");
   const [fullDescription, setFullDescription] = useState("");
   const [status, setStatus] = useState("Ongoing");
@@ -160,6 +161,15 @@ export default function CreateCourse() {
         </div>
 
         <div className="space-y-1">
+          <Label>Category</Label>
+          <Input
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            placeholder="e.g., Veterinary Courses"
+          />
+        </div>
+
+        <div className="space-y-1">
           <Label htmlFor="shortDescription">Short Description</Label>
           <Textarea
             id="shortDescription"
@@ -209,8 +219,8 @@ export default function CreateCourse() {
                 {imageUploading
                   ? "Uploading…"
                   : imageUrl
-                  ? "Click to replace image"
-                  : "Click to upload cover image"}
+                    ? "Click to replace image"
+                    : "Click to upload cover image"}
               </span>
             </label>
           </div>

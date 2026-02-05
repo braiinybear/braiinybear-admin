@@ -6,6 +6,7 @@ interface CourseCreateBody {
   totalFee?: string;
   duration?: string;
   approvedBy?: string;
+  category?: string;
   shortDescription?: string;
   fullDescription?: string;
   status?: string;
@@ -21,6 +22,7 @@ export async function POST(req: NextRequest) {
       totalFee = "",
       duration = "",
       approvedBy = "",
+      category = "",
       shortDescription = "",
       fullDescription = "",
       status = "Ongoing",
@@ -40,6 +42,7 @@ export async function POST(req: NextRequest) {
         totalFee: totalFee.trim(),
         duration: duration.trim(),
         approvedBy: approvedBy.trim(),
+        category: category.trim(),
         shortDescription: shortDescription.trim(),
         fullDescription: fullDescription.trim(),
         status: status.trim(),

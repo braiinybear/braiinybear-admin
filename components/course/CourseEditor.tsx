@@ -17,6 +17,7 @@ export type Course = {
   totalFee: string;
   duration: string;
   approvedBy: string;
+  category: string;
   shortDescription: string;
   fullDescription: string; // markdown string now
   image?: string | null;
@@ -32,6 +33,7 @@ export default function CourseEditor({ initialData }: Props) {
   const [fee, setFee] = useState(initialData?.totalFee || "");
   const [duration, setDuration] = useState(initialData?.duration || "");
   const [approvedBy, setApprovedBy] = useState(initialData?.approvedBy || "");
+  const [category, setCategory] = useState(initialData?.category || "");
   const [shortDescription, setShortDescription] = useState(
     initialData?.shortDescription || ""
   );
@@ -72,6 +74,7 @@ export default function CourseEditor({ initialData }: Props) {
       totalFee: fee.trim(),
       duration: duration.trim(),
       approvedBy: approvedBy.trim(),
+      category: category.trim(),
       shortDescription: shortDescription.trim(),
       fullDescription,
       status,
@@ -138,6 +141,15 @@ export default function CourseEditor({ initialData }: Props) {
             value={approvedBy}
             onChange={(e) => setApprovedBy(e.target.value)}
             placeholder="e.g., Dept. of Animal Husbandry"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <Label>Category</Label>
+          <Input
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            placeholder="e.g., Veterinary Courses"
           />
         </div>
 

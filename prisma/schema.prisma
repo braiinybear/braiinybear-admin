@@ -23,6 +23,7 @@ model Course {
   totalFee         String
   duration         String
   approvedBy       String
+  category         String?
   shortDescription String
   fullDescription  String
   createdAt        DateTime @default(now())
