@@ -15,6 +15,27 @@ model VideoItem {
   createdAt DateTime @default(now())
 }
 
+model Mangement {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  role      MangementRole
+}
+
+enum MangementRole {
+  ADMIN
+  SALES
+  TECHNICAL
+  HR
+}
+
+
+
+
+
+
 model Course {
   id               String   @id @default(uuid()) @map("_id")
   title            String
