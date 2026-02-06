@@ -370,7 +370,7 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState,useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
@@ -421,10 +421,31 @@ export default function UsersPage() {
   /* =======================
      FETCH USERS
   ======================== */
-  const fetchUsers = async (
-    page = pagination.page,
-    limit = pagination.limit,
-  ) => {
+  // const fetchUsers = async (
+  //   page = pagination.page,
+  //   limit = pagination.limit,
+  // ) => {
+  //   setLoading(true);
+  //   setError(null);
+
+  //   try {
+  //     const res = await fetch(`/api/users?page=${page}&limit=${limit}`);
+  //     const data = await res.json();
+
+  //     if (!data.success) throw new Error(data.message);
+
+  //     setUsers(data.data);
+  //     setPagination(data.pagination);
+  //   } catch {
+  //     setError("Failed to fetch users");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+const fetchUsers = useCallback(
+  async (page: number, limit: number) => {
     setLoading(true);
     setError(null);
 
@@ -441,11 +462,13 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  },
+  [] // no dependencies needed
+);
 
   useEffect(() => {
     fetchUsers(1, pagination.limit);
-  }, []);
+  }, [fetchUsers,pagination.limit]);
 
   /* =======================
      CLIENT SIDE FILTERING

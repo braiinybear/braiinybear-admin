@@ -23,7 +23,12 @@ type Course = {
   image: string;
   status: string;
 };
-
+type BulkCourseUpdates = {
+  totalFee?: string;
+  duration?: string;
+  status?: string;
+  category?: string;
+};
 export default function AdminCourseList() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -134,7 +139,8 @@ export default function AdminCourseList() {
     }
 
     // Build update object with only checked fields
-    const updates: any = {};
+    // here is the error
+    const updates: BulkCourseUpdates= {};
     if (fieldsToUpdate.totalFee && bulkEditData.totalFee.trim()) {
       updates.totalFee = bulkEditData.totalFee.trim();
     }
