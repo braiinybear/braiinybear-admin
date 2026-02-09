@@ -719,61 +719,63 @@ export default function UsersPage() {
 
       {!loading && filteredUsers.length > 0 && (
         <>
-          <table className="w-full bg-white border rounded-lg">
-            <thead>
-              <tr className="border-b">
-                <th className="p-4">
-                  <input
-                    type="checkbox"
-                    checked={
-                      filteredUsers.length > 0 &&
-                      filteredUsers.every((u) => selectedUsersMap[u.id])
-                    }
-                    onChange={toggleSelectAll}
-                  />
-                </th>
-                <th className="p-4 text-left">User</th>
-                <th className="p-4">Course</th>
-                <th className="p-4">Status</th>
-                <th className="p-4">Joined</th>
-                <th className="p-4">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user.id} className="border-b hover:bg-gray-50">
-                  <td className="p-4">
+          <div className="overflow-x-auto rounded-lg border">
+            <table className="w-full bg-white">
+              <thead>
+                <tr className="border-b">
+                  <th className="p-4">
                     <input
                       type="checkbox"
-                      checked={!!selectedUsersMap[user.id]}
-                      onChange={() => toggleSelectUser(user)}
+                      checked={
+                        filteredUsers.length > 0 &&
+                        filteredUsers.every((u) => selectedUsersMap[u.id])
+                      }
+                      onChange={toggleSelectAll}
                     />
-                  </td>
-                  <td className="p-4 flex gap-3 items-center">
-                    <img
-                      src={user.userImg}
-                      className="w-10 h-10 rounded-full"
-                      alt=""
-                    />
-                    {user.name}
-                  </td>
-                  <td className="p-4 text-center">{user.courseName}</td>
-                  <td className="p-4 text-center">{user.paymentStatus}</td>
-                  <td className="p-4 text-center">
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="p-4 text-center">
-                    <Button
-                      variant="outline"
-                      onClick={() => router.push(`/admin/user/${user.id}`)}
-                    >
-                      View
-                    </Button>
-                  </td>
+                  </th>
+                  <th className="p-4 text-left">User</th>
+                  <th className="p-4">Course</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4">Joined</th>
+                  <th className="p-4">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredUsers.map((user) => (
+                  <tr key={user.id} className="border-b hover:bg-gray-50">
+                    <td className="p-4">
+                      <input
+                        type="checkbox"
+                        checked={!!selectedUsersMap[user.id]}
+                        onChange={() => toggleSelectUser(user)}
+                      />
+                    </td>
+                    <td className="p-4 flex gap-3 items-center whitespace-nowrap">
+                      <img
+                        src={user.userImg}
+                        className="w-10 h-10 rounded-full"
+                        alt=""
+                      />
+                      {user.name}
+                    </td>
+                    <td className="p-4 text-center whitespace-nowrap">{user.courseName}</td>
+                    <td className="p-4 text-center whitespace-nowrap">{user.paymentStatus}</td>
+                    <td className="p-4 text-center whitespace-nowrap">
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="p-4 text-center whitespace-nowrap">
+                      <Button
+                        variant="outline"
+                        onClick={() => router.push(`/admin/user/${user.id}`)}
+                      >
+                        View
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {/* Pagination */}
           <div className="flex justify-between items-center mt-4">
