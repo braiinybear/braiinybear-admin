@@ -106,7 +106,7 @@
 //     });
 //   }, [users, search, paymentFilter, startDate, endDate]);
 //   console.log(filteredUsers);
-  
+
 //   const downloadSelectedUsersCSV = () => {
 //     let selectedData: User[];
 //     if (selectedUsers.length === 0) {
@@ -370,7 +370,7 @@
 
 "use client";
 
-import { useEffect, useMemo, useState,useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
@@ -444,31 +444,31 @@ export default function UsersPage() {
   // };
 
 
-const fetchUsers = useCallback(
-  async (page: number, limit: number) => {
-    setLoading(true);
-    setError(null);
+  const fetchUsers = useCallback(
+    async (page: number, limit: number) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const res = await fetch(`/api/users?page=${page}&limit=${limit}`);
-      const data = await res.json();
+      try {
+        const res = await fetch(`/api/users?page=${page}&limit=${limit}`);
+        const data = await res.json();
 
-      if (!data.success) throw new Error(data.message);
+        if (!data.success) throw new Error(data.message);
 
-      setUsers(data.data);
-      setPagination(data.pagination);
-    } catch {
-      setError("Failed to fetch users");
-    } finally {
-      setLoading(false);
-    }
-  },
-  [] // no dependencies needed
-);
+        setUsers(data.data);
+        setPagination(data.pagination);
+      } catch {
+        setError("Failed to fetch users");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [] // no dependencies needed
+  );
 
   useEffect(() => {
     fetchUsers(1, pagination.limit);
-  }, [fetchUsers,pagination.limit]);
+  }, [fetchUsers, pagination.limit]);
 
   /* =======================
      CLIENT SIDE FILTERING
@@ -602,8 +602,44 @@ const fetchUsers = useCallback(
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Users</h1>
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            User Management
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            View, filter, and manage registered users
+          </p>
+        </div>
+
+        {/* Stats Card */}
+        <div className="bg-white rounded-lg border p-4 shadow-sm md:w-auto">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-indigo-100 rounded-lg">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6 text-indigo-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{pagination.total}</p>
+              <p className="text-xs text-muted-foreground">Total Users</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Filters */}
       <div className="bg-white p-4 rounded-lg border mb-6 grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -773,4 +809,3 @@ const fetchUsers = useCallback(
     </div>
   );
 }
-

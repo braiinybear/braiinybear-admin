@@ -16,12 +16,12 @@ model VideoItem {
 }
 
 model Mangement {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  email     String   @unique
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  name      String        @unique
+  email     String        @unique
   password  String
-  createdAt DateTime @default(now())
-  role      MangementRole
+  createdAt DateTime      @default(now())
+  role      MangementRole @default(EMPLOYEE)
 }
 
 enum MangementRole {
@@ -29,12 +29,9 @@ enum MangementRole {
   SALES
   TECHNICAL
   HR
+  MEDIA
+  EMPLOYEE
 }
-
-
-
-
-
 
 model Course {
   id               String   @id @default(uuid()) @map("_id")
@@ -84,6 +81,5 @@ model UserInfo {
   paymentStatus PaymentStatus @default(PENDING)
   createdAt     DateTime      @default(now())
 
-
-  @@unique([phoneNo,aadharCardNo])
+  @@unique([phoneNo, aadharCardNo])
 }

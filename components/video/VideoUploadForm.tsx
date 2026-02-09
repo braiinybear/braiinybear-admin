@@ -101,8 +101,7 @@ export function VideoUploadForm() {
   }
 
   return (
-    <div className="space-y-6 border p-6 rounded-xl shadow bg-white max-w-xl mx-auto">
-      <h2 className="text-xl font-semibold">📤 Upload a Video</h2>
+    <div className="space-y-6 max-w-xl mx-auto">
 
       <div className="space-y-2">
         <Label>Title</Label>

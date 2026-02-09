@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Trash2, Pencil, Plus } from "lucide-react";
+import { Trash2, Pencil, Plus, GraduationCap, Search, Loader2, CheckSquare, Square } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
@@ -14,8 +14,11 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 
 type Course = {
   id: string;
@@ -23,17 +26,18 @@ type Course = {
   image: string;
   status: string;
 };
+
 type BulkCourseUpdates = {
   totalFee?: string;
   duration?: string;
   status?: string;
   category?: string;
 };
+
 export default function AdminCourseList() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
-
   const [isBulkMode, setIsBulkMode] = useState(false);
   const [search, setSearch] = useState("");
   const [fetching, setFetching] = useState(false);
@@ -72,30 +76,23 @@ export default function AdminCourseList() {
     }
   };
 
-  // toggle selection for a single course
-
   const toggleCourseSelection = (courseId: string) => {
     setSelectedCourses((prev) => {
-
       if (prev.includes(courseId)) {
-        return prev.filter((id) => id !== courseId)
+        return prev.filter((id) => id !== courseId);
       } else {
-        return [...prev, courseId]
+        return [...prev, courseId];
       }
-    })
-  }
-
-  // select all courses
+    });
+  };
 
   const selectAllCourses = () => {
-    setSelectedCourses(courses.map((course => course.id)));
-  }
-
-  // unselect all courses
+    setSelectedCourses(courses.map((course) => course.id));
+  };
 
   const unselectAllCourses = () => {
     setSelectedCourses([]);
-  }
+  };
 
   const handleBulkDelete = async () => {
     if (selectedCourses.length === 0) {
@@ -116,8 +113,7 @@ export default function AdminCourseList() {
             });
 
             if (res.ok) {
-              // Remove deleted courses from state
-              setCourses(prev => prev.filter(c => !selectedCourses.includes(c.id)));
+              setCourses((prev) => prev.filter((c) => !selectedCourses.includes(c.id)));
               toast.success(`${selectedCourses.length} course(s) deleted`);
               setSelectedCourses([]);
               setIsBulkMode(false);
@@ -138,9 +134,7 @@ export default function AdminCourseList() {
       return;
     }
 
-    // Build update object with only checked fields
-    // here is the error
-    const updates: BulkCourseUpdates= {};
+    const updates: BulkCourseUpdates = {};
     if (fieldsToUpdate.totalFee && bulkEditData.totalFee.trim()) {
       updates.totalFee = bulkEditData.totalFee.trim();
     }
@@ -154,7 +148,6 @@ export default function AdminCourseList() {
       updates.category = bulkEditData.category.trim();
     }
 
-    // Validate at least one field is selected
     if (Object.keys(updates).length === 0) {
       toast.error("Please select at least one field to update");
       return;
@@ -175,7 +168,6 @@ export default function AdminCourseList() {
         setShowBulkEditModal(false);
         setSelectedCourses([]);
         setIsBulkMode(false);
-        // Reset form
         setBulkEditData({
           totalFee: "",
           duration: "",
@@ -188,7 +180,7 @@ export default function AdminCourseList() {
           status: false,
           category: false,
         });
-        fetchCourses(search); // Refresh the list
+        fetchCourses(search);
       } else {
         toast.error("Failed to update courses");
       }
@@ -198,7 +190,7 @@ export default function AdminCourseList() {
   };
 
   useEffect(() => {
-    fetchCourses(); // Initial fetch
+    fetchCourses();
   }, []);
 
   useEffect(() => {
@@ -234,173 +226,270 @@ export default function AdminCourseList() {
     });
   };
 
-  if (loading) return <p className="text-center p-4">Loading courses...</p>;
+  const filteredCourses = courses.filter((course) =>
+    course.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "ongoing":
+        return "bg-green-100 text-green-700 border-green-200";
+      case "upcoming":
+        return "bg-blue-100 text-blue-700 border-blue-200";
+      case "completed":
+        return "bg-gray-100 text-gray-700 border-gray-200";
+      default:
+        return "bg-gray-100 text-gray-700 border-gray-200";
+    }
+  };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          📚 All Courses
-        </h1>
-
-        <Link href="/admin/courses/create">
-          <Button className="whitespace-nowrap flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            Create New Course
-          </Button>
-        </Link>
-      </div>
-
-      <div className="relative w-full max-w-sm mb-4">
-
-        {/* Bulk Actions Toolbar */}
-        <div className="mb-4 flex items-center gap-3 flex-wrap">
-          <Button
-            variant={isBulkMode ? "default" : "outline"}
-            onClick={() => {
-              setIsBulkMode(!isBulkMode);
-              setSelectedCourses([]); // Clear selections when toggling
-            }}
-          >
-            {isBulkMode ? "Exit Bulk Mode" : "Bulk Select"}
-          </Button>
-
-          {isBulkMode && (
-            <>
-              <Button variant="outline" onClick={selectAllCourses}>
-                Select All
-              </Button>
-              <Button variant="outline" onClick={unselectAllCourses}>
-                Deselect All
-              </Button>
-
-              {selectedCourses.length > 0 && (
-                <>
-                  <Button variant="destructive" onClick={handleBulkDelete}>
-                    Delete ({selectedCourses.length})
-                  </Button>
-                  <Button variant="default" onClick={() => setShowBulkEditModal(true)}>
-                    Edit ({selectedCourses.length})
-                  </Button>
-                </>
-              )}
-
-              <span className="text-sm text-gray-600">
-                {selectedCourses.length} course(s) selected
-              </span>
-            </>
-          )}
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Course Management
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Manage your courses, bulk edit, and track status
+          </p>
         </div>
 
-        <input
-          type="text"
-          placeholder="Search courses by title..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border rounded-md px-3 py-2 w-full pr-10"
-        />
-        {search && (
-          <button
-            type="button"
-            onClick={() => setSearch("")}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
-            aria-label="Clear search"
-          >
-            ✕
-          </button>
-        )}
+        {/* Stats */}
+        <Card className="md:w-auto">
+          <CardContent className="flex items-center gap-2 p-4">
+            <GraduationCap className="w-5 h-5 text-purple-600" />
+            <div>
+              <p className="text-2xl font-bold">{courses.length}</p>
+              <p className="text-xs text-muted-foreground">Total Courses</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {fetching ? (
-        <p className="text-center p-4">Loading courses...</p>
-      ) : courses.length === 0 ? (
-        <p className="text-center p-4 text-gray-500">No courses found.</p>
-      ) : (
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {courses.map((course) => (
-            <div
-              key={course.id}
-              className={`border rounded-xl shadow-sm overflow-hidden bg-white flex flex-col ${selectedCourses.includes(course.id) ? 'ring-4 ring-blue-500' : ''
-                }`}
-            >
-              <div className="relative w-full h-40">
+      {/* Tabs */}
+      <Tabs defaultValue="all" className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="all" className="flex items-center gap-2">
+            <GraduationCap className="w-4 h-4" />
+            All Courses
+          </TabsTrigger>
+          <TabsTrigger value="create" className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Create New
+          </TabsTrigger>
+        </TabsList>
 
-                {isBulkMode && (
-                  <div className="absolute top-2 left-2 z-10">
-                    <input
-                      type="checkbox"
-                      checked={selectedCourses.includes(course.id)}
-                      onChange={() => toggleCourseSelection(course.id)}
-                      className="w-5 h-5 cursor-pointer"
-                    />
-                  </div>
-                )}
-                <Image
-                  src={course.image}
-                  alt={course.title}
-                  fill
-                  className="object-cover rounded-t-xl"
-                  sizes="(max-width: 768px) 100vw, 33vw"
+        {/* All Courses Tab */}
+        <TabsContent value="all" className="space-y-4 mt-6">
+          {/* Search and Bulk Actions */}
+          <Card>
+            <CardContent className="p-4 space-y-4">
+              {/* Search */}
+              <div className="relative flex-1 w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search courses by title..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-10"
                 />
               </div>
 
-              <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
-                <div>
-                  <h2 className="font-semibold text-lg truncate">
-                    {course.title}
-                  </h2>
-                  <p className="text-xs text-gray-500">{course.status}</p>
-                </div>
+              {/* Bulk Actions */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <Button
+                  variant={isBulkMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    setIsBulkMode(!isBulkMode);
+                    setSelectedCourses([]);
+                  }}
+                >
+                  {isBulkMode ? (
+                    <>
+                      <CheckSquare className="w-4 h-4 mr-2" />
+                      Exit Bulk Mode
+                    </>
+                  ) : (
+                    <>
+                      <Square className="w-4 h-4 mr-2" />
+                      Bulk Select
+                    </>
+                  )}
+                </Button>
 
-                <div className="flex justify-between gap-2 pt-2">
-                  <Button
-                    className="hover:bg-blue-500 hover:text-white cursor-pointer hover:scale-[1.05] transition-transform"
-                    variant="outline"
-                    size="sm"
-                    disabled={navigatingToEdit === course.id || isBulkMode}
-                    onClick={() => {
-                      setNavigatingToEdit(course.id);
-                      router.push(`/admin/courses/${course.id}`);
-                    }}
-                  >
-                    {navigatingToEdit === course.id ? (
-                      <span className="animate-pulse">Loading...</span>
-                    ) : (
+                {isBulkMode && (
+                  <>
+                    <Button variant="outline" size="sm" onClick={selectAllCourses}>
+                      Select All
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={unselectAllCourses}>
+                      Deselect All
+                    </Button>
+
+                    {selectedCourses.length > 0 && (
                       <>
-                        <Pencil className="w-4 h-4 mr-1" />
-                        Edit
+                        <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete ({selectedCourses.length})
+                        </Button>
+                        <Button size="sm" onClick={() => setShowBulkEditModal(true)}>
+                          <Pencil className="w-4 h-4 mr-2" />
+                          Edit ({selectedCourses.length})
+                        </Button>
                       </>
                     )}
-                  </Button>
 
-                  <Button
-                    className="cursor-pointer hover:scale-[1.05] transition-transform"
-                    variant="destructive"
-                    size="sm"
-                    disabled={deletingId === course.id || isBulkMode}
-                    onClick={() => handleDelete(course.id)}
-                  >
-                    {deletingId === course.id ? (
-                      <span className="animate-pulse">Deleting...</span>
-                    ) : (
-                      <>
-                        <Trash2 className="w-4 h-4 mr-1" />
-                        Delete
-                      </>
-                    )}
-                  </Button>
-                </div>
+                    <Badge variant="secondary">
+                      {selectedCourses.length} selected
+                    </Badge>
+                  </>
+                )}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Courses Grid */}
+          {loading || fetching ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-16">
+                <Loader2 className="w-8 h-8 animate-spin text-purple-600 mb-4" />
+                <p className="text-sm text-muted-foreground">Loading courses...</p>
+              </CardContent>
+            </Card>
+          ) : filteredCourses.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-16">
+                <GraduationCap className="w-16 h-16 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold mb-2">
+                  {search ? "No courses found" : "No courses yet"}
+                </h3>
+                <p className="text-sm text-muted-foreground text-center max-w-md">
+                  {search
+                    ? "Try adjusting your search query"
+                    : "Create your first course to get started"}
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {filteredCourses.map((course) => (
+                <Card
+                  key={course.id}
+                  className={`overflow-hidden transition-all flex flex-col justify-end hover:shadow-lg ${selectedCourses.includes(course.id) ? "ring-2 ring-purple-500" : ""
+                    }`}
+                >
+                  <div className="relative w-full h-48">
+                    {isBulkMode && (
+                      <div className="absolute top-3 left-3 z-10">
+                        <input
+                          type="checkbox"
+                          checked={selectedCourses.includes(course.id)}
+                          onChange={() => toggleCourseSelection(course.id)}
+                          className="w-5 h-5 cursor-pointer accent-purple-600"
+                        />
+                      </div>
+                    )}
+                    <Image
+                      src={course.image}
+                      alt={course.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 25vw"
+                    />
+                  </div>
+
+                  <CardContent className="p-4 space-y-3">
+                    <div>
+                      <h2 className="font-semibold text-base line-clamp-2 mb-2">
+                        {course.title}
+                      </h2>
+                      <Badge className={getStatusColor(course.status)} variant="outline">
+                        {course.status}
+                      </Badge>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button
+                        className="flex-1"
+                        variant="outline"
+                        size="sm"
+                        disabled={navigatingToEdit === course.id || isBulkMode}
+                        onClick={() => {
+                          setNavigatingToEdit(course.id);
+                          router.push(`/admin/courses/${course.id}`);
+                        }}
+                      >
+                        {navigatingToEdit === course.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Pencil className="w-4 h-4 mr-1" />
+                            Edit
+                          </>
+                        )}
+                      </Button>
+
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        disabled={deletingId === course.id || isBulkMode}
+                        onClick={() => handleDelete(course.id)}
+                      >
+                        {deletingId === course.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          )}
+
+          {/* Results count */}
+          {!loading && !fetching && filteredCourses.length > 0 && (
+            <p className="text-sm text-muted-foreground text-center">
+              Showing {filteredCourses.length} of {courses.length} courses
+            </p>
+          )}
+        </TabsContent>
+
+        {/* Create Tab */}
+        <TabsContent value="create" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Plus className="w-5 h-5" />
+                Create New Course
+              </CardTitle>
+              <CardDescription>
+                Click the button below to create a new course
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/admin/courses/create">
+                <Button className="w-full" size="lg">
+                  <Plus className="w-5 h-5 mr-2" />
+                  Create New Course
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Bulk Edit Modal */}
       <Dialog open={showBulkEditModal} onOpenChange={setShowBulkEditModal}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Bulk Edit Courses ({selectedCourses.length} selected)</DialogTitle>
+            <DialogTitle>
+              Bulk Edit Courses ({selectedCourses.length} selected)
+            </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
@@ -413,9 +502,11 @@ export default function AdminCourseList() {
                   onChange={(e) =>
                     setFieldsToUpdate({ ...fieldsToUpdate, totalFee: e.target.checked })
                   }
-                  className="w-4 h-4 cursor-pointer"
+                  className="w-4 h-4 cursor-pointer accent-purple-600"
                 />
-                <Label htmlFor="update-fee" className="cursor-pointer">Update Total Fee</Label>
+                <Label htmlFor="update-fee" className="cursor-pointer">
+                  Update Total Fee
+                </Label>
               </div>
               <Input
                 placeholder="e.g., 40,000 + Hostel"
@@ -436,9 +527,11 @@ export default function AdminCourseList() {
                   onChange={(e) =>
                     setFieldsToUpdate({ ...fieldsToUpdate, duration: e.target.checked })
                   }
-                  className="w-4 h-4 cursor-pointer"
+                  className="w-4 h-4 cursor-pointer accent-purple-600"
                 />
-                <Label htmlFor="update-duration" className="cursor-pointer">Update Duration</Label>
+                <Label htmlFor="update-duration" className="cursor-pointer">
+                  Update Duration
+                </Label>
               </div>
               <Input
                 placeholder="e.g., 3 Months"
@@ -459,9 +552,11 @@ export default function AdminCourseList() {
                   onChange={(e) =>
                     setFieldsToUpdate({ ...fieldsToUpdate, status: e.target.checked })
                   }
-                  className="w-4 h-4 cursor-pointer"
+                  className="w-4 h-4 cursor-pointer accent-purple-600"
                 />
-                <Label htmlFor="update-status" className="cursor-pointer">Update Status</Label>
+                <Label htmlFor="update-status" className="cursor-pointer">
+                  Update Status
+                </Label>
               </div>
               <select
                 value={bulkEditData.status}
@@ -487,9 +582,11 @@ export default function AdminCourseList() {
                   onChange={(e) =>
                     setFieldsToUpdate({ ...fieldsToUpdate, category: e.target.checked })
                   }
-                  className="w-4 h-4 cursor-pointer"
+                  className="w-4 h-4 cursor-pointer accent-purple-600"
                 />
-                <Label htmlFor="update-category" className="cursor-pointer">Update Category</Label>
+                <Label htmlFor="update-category" className="cursor-pointer">
+                  Update Category
+                </Label>
               </div>
               <Input
                 placeholder="e.g., Veterinary Courses"
@@ -506,9 +603,7 @@ export default function AdminCourseList() {
             <Button variant="outline" onClick={() => setShowBulkEditModal(false)}>
               Cancel
             </Button>
-            <Button onClick={handleBulkEdit}>
-              Save Changes
-            </Button>
+            <Button onClick={handleBulkEdit}>Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

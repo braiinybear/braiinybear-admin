@@ -39,7 +39,7 @@ export function AdminVideoCard({ video, onDelete }: Props) {
 
   const handleMouseEnter = () => {
     setHovered(true);
-    videoRef.current?.play().catch(() => {});
+    videoRef.current?.play().catch(() => { });
   };
 
   const handleMouseLeave = () => {
@@ -52,12 +52,12 @@ export function AdminVideoCard({ video, onDelete }: Props) {
 
   return (
     <div
-      className="group relative w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2"
+      className="group relative w-full"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Video preview area */}
-      <div className="relative w-full aspect-[9/16] overflow-hidden rounded-lg bg-black shadow-sm transition hover:scale-[1.01] hover:shadow-md">
+      <div className="relative w-full aspect-[9/16] overflow-hidden rounded-lg bg-black shadow-lg transition hover:scale-[1.02] hover:shadow-xl">
         <Image
           src={video.thumbnail}
           alt="Thumbnail"
