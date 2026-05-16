@@ -67,7 +67,8 @@ export default function AdminCourseList() {
       const res = await fetch(`/api/courses?search=${encodeURIComponent(query)}`);
       if (!res.ok) throw new Error("Failed to fetch courses");
       const data = await res.json();
-      setCourses(data.courses || []);
+      console.log("Fetched courses:", data.data.courses);
+      setCourses(data.data.courses || []);
     } catch {
       toast.error("Failed to fetch courses");
     } finally {
