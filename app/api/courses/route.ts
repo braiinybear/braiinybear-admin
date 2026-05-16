@@ -2,14 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import { withCors } from "@/lib/cors";
-import { errorResponse, paginatedResponse } from "@/lib/api-response";
-import { getPaginationParams, calculateSkip } from "@/lib/pagination";
+import { errorResponse } from "@/lib/api-response";
+// import { errorResponse, paginatedResponse } from "@/lib/api-response";
+// import { getPaginationParams, calculateSkip } from "@/lib/pagination";
 
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const search = url.searchParams.get("search") || "";
-    const { page, limit } = getPaginationParams(url.searchParams);
+    // const { page, limit } = getPaginationParams(url.searchParams);
 
     const where = search
       ? {
@@ -35,13 +36,14 @@ export async function GET(req: NextRequest) {
           category: true,
         },
         orderBy: { createdAt: "desc" },
-        skip: calculateSkip(page, limit),
-        take: limit,
+        // skip: calculateSkip(page, limit),
+        // take: limit,
       }),
       db.course.count({ where }),
     ]);
 
-    const response = paginatedResponse(courses, page, limit, total);
+    // const response = paginatedResponse(courses, page, limit, total);
+    const response = {success:true , data : {courses, total}};
     return withCors(NextResponse.json(response));
   } catch (err) {
     console.error("Failed to fetch courses", err);
