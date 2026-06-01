@@ -31,6 +31,9 @@ export async function POST(req: NextRequest) {
       folder: "/videos",
     });
     thumbUrl = thumbRes.url;
+  } else {
+    // Automatically generate a sleek thumbnail snapshot from the uploaded video using ImageKit
+    thumbUrl = `${videoRes.url}/ik-thumbnail.jpg`;
   }
 
   const video = await db.videoItem.create({
@@ -47,6 +50,7 @@ export async function POST(req: NextRequest) {
 export async function GET() {
   const videos = await db.videoItem.findMany({
     orderBy: { createdAt: "desc" },
+    take: 12, // Limit response to the 12 most recent items to optimize frontend carousel performance
   });
 
   return withCors(NextResponse.json(videos));
