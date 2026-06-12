@@ -47,6 +47,62 @@ export function VideoUploadForm() {
     });
   }
 
+  async function uploadToImageKit(
+    file: File,
+    fileName: string,
+    onProgress: (percent: number) => void
+  ): Promise<string> {
+    const authRes = await fetch("/api/imagekit");
+    if (!authRes.ok) throw new Error("Failed to get ImageKit auth params");
+    const authData = await authRes.json();
+    const { signature, token, expire } = authData;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("fileName", fileName);
+    formData.append("publicKey", process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY || "");
+    formData.append("signature", signature);
+    formData.append("token", token);
+    formData.append("expire", expire.toString());
+    formData.append("folder", "/videos");
+
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "https://upload.imagekit.io/api/v1/files/upload");
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          onProgress(percent);
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          try {
+            const resData = JSON.parse(xhr.responseText);
+            resolve(resData.url);
+          } catch {
+            reject(new Error("Failed to parse ImageKit response"));
+          }
+        } else {
+          try {
+            const errData = JSON.parse(xhr.responseText);
+            reject(new Error(errData.message || "ImageKit upload failed"));
+          } catch {
+            reject(new Error(`ImageKit upload failed with status ${xhr.status}`));
+          }
+        }
+      };
+
+      xhr.onerror = () => {
+        reject(new Error("Network error during upload"));
+      };
+
+      xhr.send(formData);
+    });
+  }
+
   async function uploadVideo() {
     if (!videoFile || !title) return toast.error("Please fill all required fields");
 
@@ -63,23 +119,44 @@ export function VideoUploadForm() {
       }
     }
 
-    const form = new FormData();
-    form.append("file", videoFile);
-    form.append("title", title);
-    if (thumbnail) form.append("thumbnail", thumbnail);
+    try {
+      toast.info("Uploading video directly to ImageKit...");
+      const videoUrl = await uploadToImageKit(
+        videoFile,
+        `${title}-video.mp4`,
+        (percent) => {
+          setUploadProgress(Math.round(percent * 0.9));
+        }
+      );
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/videos");
-
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const percent = Math.round((event.loaded / event.total) * 100);
-        setUploadProgress(percent);
+      let thumbnailUrl = "";
+      if (thumbnail) {
+        toast.info("Uploading thumbnail...");
+        thumbnailUrl = await uploadToImageKit(
+          thumbnail,
+          `${title}-thumb.jpg`,
+          () => {}
+        );
+      } else {
+        thumbnailUrl = `${videoUrl}/ik-thumbnail.jpg`;
       }
-    };
 
-    xhr.onload = () => {
-      if (xhr.status === 201) {
+      setUploadProgress(95);
+
+      toast.info("Saving database entry...");
+      const dbRes = await fetch("/api/videos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          url: videoUrl,
+          thumbnail: thumbnailUrl,
+        }),
+      });
+
+      if (dbRes.ok) {
         setUploadProgress(100);
         toast.success("Video uploaded!");
         setUploadSuccess(true);
@@ -87,17 +164,15 @@ export function VideoUploadForm() {
           window.location.reload();
         }, 1000);
       } else {
-        toast.error("Upload failed");
+        const errData = await dbRes.json();
+        toast.error(errData.error || "Failed to save video database entry");
       }
+    } catch (err) {
+      console.error(err);
+      toast.error(err instanceof Error ? err.message : "Upload failed");
+    } finally {
       setUploading(false);
-    };
-
-    xhr.onerror = () => {
-      setUploading(false);
-      toast.error("Upload error");
-    };
-
-    xhr.send(form);
+    }
   }
 
   return (

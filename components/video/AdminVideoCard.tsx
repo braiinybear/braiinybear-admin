@@ -59,7 +59,7 @@ export function AdminVideoCard({ video, onDelete }: Props) {
       {/* Video preview area */}
       <div className="relative w-full aspect-[9/16] overflow-hidden rounded-lg bg-black shadow-lg transition hover:scale-[1.02] hover:shadow-xl">
         <Image
-          src={video.thumbnail}
+          src={video.thumbnail.includes("imagekit.io") ? `${video.thumbnail}?tr=w-320,h-568,q-70,f-auto` : video.thumbnail}
           alt="Thumbnail"
           className={clsx(
             "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
@@ -69,7 +69,6 @@ export function AdminVideoCard({ video, onDelete }: Props) {
         />
         <video
           ref={videoRef}
-          src={video.url}
           muted
           playsInline
           preload="metadata"
@@ -77,7 +76,12 @@ export function AdminVideoCard({ video, onDelete }: Props) {
             "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
             hovered ? "opacity-100" : "opacity-0"
           )}
-        />
+        >
+          {/* 1. Highly-compressed, super lightweight WebM stream for modern browsers */}
+          <source src={`${video.url}?tr=f-webm,q-60,w-480`} type="video/webm" />
+          {/* 2. Compressed MP4 stream fallback for maximum compatibility */}
+          <source src={`${video.url}?tr=q-65,w-480`} type="video/mp4" />
+        </video>
         <div
           className={clsx(
             "absolute inset-0 flex items-center justify-center transition-opacity duration-300",

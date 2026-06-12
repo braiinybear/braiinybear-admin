@@ -27,3 +27,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }
+
+export async function GET() {
+  try {
+    const params = imagekit.getAuthenticationParameters();
+    return NextResponse.json(params);
+  } catch (err) {
+    console.error("Failed to generate ImageKit auth params:", err);
+    return NextResponse.json({ error: "Auth generation failed" }, { status: 500 });
+  }
+}
+

@@ -4,47 +4,69 @@ import { imagekit } from "@/lib/imagekit";
 import { withCors } from "@/lib/cors";
 
 export async function POST(req: NextRequest) {
-  const form = await req.formData();
-  const file = form.get("file") as File;
-  const title = form.get("title") as string;
-  const userThumbnail = form.get("thumbnail") as File | null;
+  try {
+    const contentType = req.headers.get("content-type") || "";
 
-  if (!file || !title) {
-    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-  }
+    let title = "";
+    let videoUrl = "";
+    let thumbnailUrl = "";
 
-  const videoBuffer = Buffer.from(await file.arrayBuffer());
+    if (contentType.includes("application/json")) {
+      const body = await req.json();
+      title = body.title;
+      videoUrl = body.url || body.videoUrl;
+      thumbnailUrl = body.thumbnail || body.thumbnailUrl;
+    } else {
+      const form = await req.formData();
+      const file = form.get("file") as File | null;
+      title = form.get("title") as string;
+      const userThumbnail = form.get("thumbnail") as File | null;
+      const passedVideoUrl = form.get("videoUrl") as string | null;
+      const passedThumbnailUrl = form.get("thumbnailUrl") as string | null;
 
-  const videoRes = await imagekit.upload({
-    file: videoBuffer,
-    fileName: `${title}-video.mp4`,
-    folder: "/videos",
-  });
+      if (passedVideoUrl) {
+        videoUrl = passedVideoUrl;
+        thumbnailUrl = passedThumbnailUrl || "";
+      } else if (file) {
+        const videoBuffer = Buffer.from(await file.arrayBuffer());
+        const videoRes = await imagekit.upload({
+          file: videoBuffer,
+          fileName: `${title}-video.mp4`,
+          folder: "/videos",
+        });
+        videoUrl = videoRes.url;
 
-  let thumbUrl = "";
+        if (userThumbnail && userThumbnail.size > 0) {
+          const thumbBuffer = Buffer.from(await userThumbnail.arrayBuffer());
+          const thumbRes = await imagekit.upload({
+            file: thumbBuffer,
+            fileName: `${title}-thumb.jpg`,
+            folder: "/videos",
+          });
+          thumbnailUrl = thumbRes.url;
+        } else {
+          thumbnailUrl = `${videoRes.url}/ik-thumbnail.jpg`;
+        }
+      }
+    }
 
-  if (userThumbnail && userThumbnail.size > 0) {
-    const thumbBuffer = Buffer.from(await userThumbnail.arrayBuffer());
-    const thumbRes = await imagekit.upload({
-      file: thumbBuffer,
-      fileName: `${title}-thumb.jpg`,
-      folder: "/videos",
+    if (!videoUrl || !title) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    const video = await db.videoItem.create({
+      data: {
+        url: videoUrl,
+        thumbnail: thumbnailUrl || `${videoUrl}/ik-thumbnail.jpg`,
+        title,
+      },
     });
-    thumbUrl = thumbRes.url;
-  } else {
-    // Automatically generate a sleek thumbnail snapshot from the uploaded video using ImageKit
-    thumbUrl = `${videoRes.url}/ik-thumbnail.jpg`;
+
+    return NextResponse.json(video, { status: 201 });
+  } catch (error) {
+    console.error("Error creating video item:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
-
-  const video = await db.videoItem.create({
-    data: {
-      url: videoRes.url,
-      thumbnail: thumbUrl,
-      title,
-    },
-  });
-
-  return NextResponse.json(video, { status: 201 });
 }
 
 export async function GET() {
